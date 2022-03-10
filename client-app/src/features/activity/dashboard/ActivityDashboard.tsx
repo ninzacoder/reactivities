@@ -10,17 +10,26 @@ interface Props{
     selectedActivity: Activity | undefined;
     handleSelectedActivity: (id: string) => void;
     cancelSelectedActivity: () => void;
+    editMode: boolean;
+    formOpen:(id: string) => void;
+    formClose:() => void;
+    handleCreateorEdit: (activity: Activity) => void;
+    handleDelete:(id: string) => void;
 }
 
-export default function ActivityDashboard({activities, handleSelectedActivity, selectedActivity, cancelSelectedActivity}: Props){
+export default function ActivityDashboard({activities, handleSelectedActivity, selectedActivity, cancelSelectedActivity, formOpen, formClose, editMode, handleCreateorEdit, handleDelete}: Props){
     return(
         <Grid>
             <Grid.Column width='10'>
-                <ActivityList activities={activities} handleSelectedActivity={handleSelectedActivity}></ActivityList>
+                <ActivityList activities={activities} 
+                            handleSelectedActivity={handleSelectedActivity}
+                            formOpen={formOpen}
+                            handleDelete={handleDelete}
+                            ></ActivityList>
           </Grid.Column>
           <Grid.Column width='6'>
-              {selectedActivity && <ActivityDetails activity={selectedActivity} cancelSelectedActivity={cancelSelectedActivity}></ActivityDetails>}
-              <ActivityForm></ActivityForm>
+              {selectedActivity && !editMode && <ActivityDetails activity={selectedActivity} cancelSelectedActivity={cancelSelectedActivity} formClose={formClose} formOpen={formOpen}></ActivityDetails>}
+                              {editMode && <ActivityForm formClose={formClose} activity={selectedActivity} handleCreateorEdit={handleCreateorEdit}></ActivityForm>}
           </Grid.Column>
           </Grid>
     )
