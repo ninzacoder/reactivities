@@ -7,7 +7,8 @@ import Navbar from '../../features/menu/Navbar';
 import ActivityDashboard from '../../features/activity/dashboard/ActivityDashboard';
 import { act } from 'react-dom/test-utils';
 import {v4 as uuid} from 'uuid';
-import { randomUUID } from 'crypto';
+import agent from '../api/agent';
+
 function App() {
   const [activities, setActivities] = useState<Activity[]>([]);
   const [selectedActivity, setSelectedActivity] = useState<Activity | undefined>(undefined);
@@ -46,10 +47,11 @@ function App() {
   }
 
   useEffect(() => {
-      axios.get<Activity[]>('http://localhost:5000/api/activity').then(response=>{
-        setActivities(response.data);
-      })
-  }, [])
+      agent.Activities.list().then(response => {
+        let activities = response.forEach(x=> x.date.split('T')[0]);
+        setActivities([...response]);
+
+      }) }, [])
 
   return (
     <Fragment>
