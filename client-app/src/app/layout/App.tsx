@@ -8,11 +8,14 @@ import ActivityDashboard from '../../features/activity/dashboard/ActivityDashboa
 import { act } from 'react-dom/test-utils';
 import {v4 as uuid} from 'uuid';
 import agent from '../api/agent';
+import LoadingComponent from './LoadingComponent';
 
 function App() {
   const [activities, setActivities] = useState<Activity[]>([]);
   const [selectedActivity, setSelectedActivity] = useState<Activity | undefined>(undefined);
   const [editMode, setEditMode] = useState(false);
+  const [loading, setLoadingIndicator] = useState(true);
+  const [submitted, setSubmitting] = useState(false);
 
   function handleSelectedActivity(id: string){
     setSelectedActivity(activities.find(x=> x.id === id));
@@ -35,23 +38,51 @@ function App() {
 
   function handleDelete(id: string)
   {
-    setActivities([...activities.filter(x=> x.id !== id)]);
+    setSubmitting(true);
+    agent.Activities.delete(id).then(() => {setActivities([...activities.filter(x=> x.id !== id)]);
+    setSubmitting(false);
+    })
+    
   }
 
   function handleCreateOrEditActivity(activity: Activity)
   {
-    activity.id ? setActivities([...activities.filter(x=> x.id !== activity.id),activity]) :
-    setActivities([...activities, {...activity, id: uuid()}]);
-    setEditMode(false);
-    setSelectedActivity(activity);
+    setSubmitting(true);
+    if (activity.id)
+    {
+      agent.Activities.edit(activity).then(()=> {
+        setActivities([...activities.filter(x=> x.id !== activity.id),activity]);
+        setEditMode(false);
+        setSelectedActivity(activity);
+        setSubmitting(false);
+      }) 
+    }
+    else
+    {     
+      activity.id=uuid();
+      agent.Activities.create(activity).then(() => {
+        setActivities([...activities, activity]);
+        setEditMode(false);
+        setSelectedActivity(activity);
+        setSubmitting(false);
+      }) 
+    }
   }
 
   useEffect(() => {
       agent.Activities.list().then(response => {
-        let activities = response.forEach(x=> x.date.split('T')[0]);
-        setActivities([...response]);
+        let activities = [];
+        response.forEach(x=> {
+          var activity = x;
+          activity.date = activity.date.split('T')[0];
+          activities.push(activity);
+        });
+        setLoadingIndicator(false);
+        setActivities([...activities]);
 
       }) }, [])
+
+  if (loading) return <LoadingComponent content="Loading..." inverted={true}></LoadingComponent>
 
   return (
     <Fragment>
@@ -65,7 +96,8 @@ function App() {
                               formOpen={handleFormOpen}
                               formClose={handleFormClose}
                               handleCreateorEdit={handleCreateOrEditActivity}
-                              handleDelete={handleDelete}></ActivityDashboard>
+                              handleDelete={handleDelete}
+                              submitted={submitted}></ActivityDashboard>
         </Container> 
     </Fragment>
   );
