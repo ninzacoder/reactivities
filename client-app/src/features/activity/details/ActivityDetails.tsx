@@ -1,16 +1,15 @@
 import React from 'react';
 import { findRenderedDOMComponentWithClass } from 'react-dom/test-utils';
 import { Button, ButtonGroup, Card, Icon, Image } from 'semantic-ui-react';
+import { useStore } from '../../../app/stores/store';
 import { Activity } from '../../../model/Activity';
 
-interface Props{
-    activity: Activity;
-    cancelSelectedActivity: () => void;
-    formClose: () => void;
-    formOpen: (id: string) => void;
-}
+export default function ActivityDetails(){
 
-export default function ActivityDetails({activity, cancelSelectedActivity, formClose, formOpen}: Props){
+  const {activityStore} = useStore();
+
+  const {selectedActivity: activity, formClose, formOpen} = activityStore;
+
     return(
         <Card fluid>
         <Image src={`/assets/categoryImages/${activity.category}.jpg`} wrapped ui={false} />
