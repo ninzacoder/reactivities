@@ -1,7 +1,9 @@
 import React from 'react';
+import { NavLink } from 'react-router-dom';
 import { Button, Container, Image, Menu } from 'semantic-ui-react';
 import '../../app/layout/styles.css';
 import { useStore } from '../../app/stores/store';
+import ActivityDashboard from '../activity/dashboard/ActivityDashboard';
 
 
 export default function Navbar(){
@@ -11,13 +13,12 @@ export default function Navbar(){
     return (
         <Menu inverted fixed='top'>
             <Container>
-                <Menu.Item header>
+                <Menu.Item exact header as={NavLink} to="/" >
                     <Image src='.\assets\logo.png' alt='logo' style={{marginRight:10}}></Image>
-                        Reactivities
                     </Menu.Item>
-                <Menu.Item name='Activities' />
+                <Menu.Item exact name='Activities' as={NavLink} to="/activities" />
                 <Menu.Item>
-                    <Button positive content='Create Activity' onClick={() => activityStore.formOpen()}></Button>
+                    <Button exact as={NavLink} to="/createActivity" positive content='Create Activity'></Button>
                 </Menu.Item>
             </Container>
         </Menu>
