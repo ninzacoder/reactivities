@@ -23,8 +23,7 @@ export default class ActivityStore{
         {
         const activities = await agent.Activities.list();
         activities.forEach(x=> {
-            x.date = x.date.split('T')[0];
-            this.activityRegistry.set(x.id, x);
+          this.setActivity(x);
           });
         }
         catch(error)
@@ -36,28 +35,47 @@ export default class ActivityStore{
     
     }
 
+    loadActivity = async (id: string) => {
+        let activity = this.getActivity(id);
+        console.log('test');
+        console.log(activity);
+        if (activity){
+            this.selectedActivity = activity;
+            console.log(activity);
+        } else {
+            this.loadingInitial = true;
+            try{
+                activity = await agent.Activities.details(id);
+                this.setActivity(activity);
+                runInAction(() => {
+                this.selectedActivity = activity;
+                this.loadingInitial = false;
+                })
+                
+                console.log(activity);
+            }
+            catch (error){
+                console.log(error);
+                this.loadingInitial = false;
+            }
+        }
+        console.log(activity);
+    }
+
+    private setActivity = (activity: Activity) => {
+        activity.date = activity.date.split('T')[0];
+        this.activityRegistry.set(activity.id, activity);
+    }
+
+    private getActivity = (id: string) => {
+        return this.activityRegistry.get(id);
+    }
+
     updateLoadingIndicator = (status: boolean) => {
         this.loadingInitial = status;
     }
 
-    selectActivity= (id: string) => {
-        this.selectedActivity = this.activityRegistry.get(id);
-    }
-
-    cancelActivity = ()  => {
-        this.selectedActivity = undefined;
-    }
-
-    formOpen = (id?: string) => 
-    {
-      id? this.selectActivity(id): this.cancelActivity();
-      this.editMode = true;
-    }
-  
-    formClose =() => 
-    {
-      this.editMode = false;
-    }
+ 
 
     setEditMode = (status: boolean) => {
         this.editMode = status;
@@ -72,7 +90,7 @@ export default class ActivityStore{
             console.log('create activity');
             runInAction(() => {
                 this.activityRegistry.set(activity.id, activity);
-                this.selectActivity(activity.id);
+                this.selectedActivity = activity;
                 this.setEditMode(false);
                 this.loading = false;
             })
@@ -94,7 +112,7 @@ export default class ActivityStore{
               await agent.Activities.edit(activity);
               runInAction(() => {
                 this.activityRegistry.set(activity.id, activity);
-                this.selectActivity(activity.id);
+                this.selectedActivity = activity;
                 this.setEditMode(false);
                 this.loading = false;
               })

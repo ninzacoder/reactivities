@@ -1,14 +1,9 @@
-import React from 'react';
 import { NavLink } from 'react-router-dom';
 import { Button, Container, Image, Menu } from 'semantic-ui-react';
 import '../../app/layout/styles.css';
-import { useStore } from '../../app/stores/store';
-import ActivityDashboard from '../activity/dashboard/ActivityDashboard';
 
 
-export default function Navbar(){
-
-    const {activityStore} = useStore();
+export default function Navbar(){ 
 
     return (
         <Menu inverted fixed='top'>

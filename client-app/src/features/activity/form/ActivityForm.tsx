@@ -8,7 +8,7 @@ import { Activity } from '../../../model/Activity';
 export default observer(function ActivityForm(){
 
     const {activityStore} = useStore();
-    const {selectedActivity, formClose, createActivity, editActivity, loading} = activityStore;
+    const {selectedActivity, createActivity, editActivity, loading} = activityStore;
 
     const initialState = selectedActivity ?? {
         id: '',
@@ -42,7 +42,7 @@ export default observer(function ActivityForm(){
                 <Form.Input placeholder='City' name='city' value={activity.city} onChange={inputChange}></Form.Input>
                 <Form.Input placeholder='Venue' name='venue' value={activity.venue} onChange={inputChange}></Form.Input>
                 <Button loading={loading} floated='right' color='blue' content='Submit' type='submit'></Button>
-                <Button onClick={formClose} floated='right' color='grey' content='Cancel' type='button'></Button>
+                <Button floated='right' color='grey' content='Cancel' type='button'></Button>
             </Form>
         </Segment>
     )

@@ -1,18 +1,27 @@
-import React from 'react';
-import { findRenderedDOMComponentWithClass } from 'react-dom/test-utils';
-import { Button, ButtonGroup, Card, Icon, Image } from 'semantic-ui-react';
+import { observer } from 'mobx-react-lite';
+import { useEffect } from 'react';
+import { useParams } from 'react-router-dom';
+import { Button, Card, Image } from 'semantic-ui-react';
+import LoadingComponent from '../../../app/layout/LoadingComponent';
 import { useStore } from '../../../app/stores/store';
-import { Activity } from '../../../model/Activity';
 
-export default function ActivityDetails(){
+export default observer(function ActivityDetails(){
 
   const {activityStore} = useStore();
+  const {selectedActivity: activity, loadActivity, loadingInitial} = activityStore;
+  const {id} = useParams<{id: string}>();
 
-  const {selectedActivity: activity, formClose, formOpen} = activityStore;
+  useEffect(() => {
+    if (id) loadActivity(id);
+    }, [id, loadActivity]);
+
+
+    if (loadingInitial || !activity) 
+      return <LoadingComponent />;
 
     return(
         <Card fluid>
-        <Image src={`/assets/categoryImages/${activity.category}.jpg`} wrapped ui={false} />
+          <Image src={`/assets/categoryImages/${activity.category}.jpg`}></Image>
         <Card.Content>
           <Card.Header>{activity.title}</Card.Header>
           <Card.Meta>
@@ -24,10 +33,10 @@ export default function ActivityDetails(){
         </Card.Content>
         <Card.Content extra>
           <Button.Group widths='2'>
-              <Button basic color='blue' content='Edit' onClick={() => formOpen(activity.id)}></Button>
-              <Button basic color='grey' floated='right' content='Cancel' onClick={formClose}></Button>
+              <Button basic color='blue' content='Edit'></Button>
+              <Button basic color='grey' floated='right' content='Cancel'></Button>
           </Button.Group>
         </Card.Content>
       </Card>
     )
-}
+})

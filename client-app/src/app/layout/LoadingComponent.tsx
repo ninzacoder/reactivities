@@ -2,8 +2,8 @@ import React from "react";
 import { Dimmer, Loader } from "semantic-ui-react";
 
 interface Props{
-    content: string;
-    inverted: boolean;
+    content?: string;
+    inverted?: boolean;
 }
 
 export default function LoadingComponent({content, inverted}: Props){
