@@ -41,7 +41,9 @@ export default class ActivityStore{
         console.log(activity);
         if (activity){
             this.selectedActivity = activity;
+            
             console.log(activity);
+            return activity;
         } else {
             this.loadingInitial = true;
             try{
@@ -51,8 +53,9 @@ export default class ActivityStore{
                 this.selectedActivity = activity;
                 this.loadingInitial = false;
                 })
-                
+               
                 console.log(activity);
+                return activity;
             }
             catch (error){
                 console.log(error);
